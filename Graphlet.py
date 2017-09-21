@@ -1,5 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import time
+import numpy as np
 import pdb
 
 
@@ -35,13 +37,13 @@ class Graphlet:
 
 
 
-
     # initializer
     def __init__(self, init_graph):
         self.G = init_graph
+        self._init_all_data()
         self._count_triangles()
-        self._count_4_nodes()
-        self._count_total_5_nodes()
+        self._count_4_nodes_global()
+        #self._count_total_5_nodes()
 
     def show_graph(self):
         nx.draw(self.G, with_labels=True)
@@ -143,6 +145,34 @@ class Graphlet:
 
 
     # helper methods
+
+    def _init_all_data(self):
+        # class variables
+        # 3-nodes triangles
+        self.open_triangle_dict = {}
+        self.close_triangle_dict = {}
+
+        self.total_close_triangle = []
+        self.total_open_triangle = []
+        # 4-nodes
+        self.four_path_dict = {}
+        self.four_chordal_cycle_dict = {}
+        self.four_tailed_triangle_dict = {}
+        self.four_clique_dict = {}
+        self.four_cycle_dict = {}
+        self.three_star_dict = {}
+
+        self.total_four_path = []
+        self.total_three_star = []
+        self.total_four_cycle = []
+        self.total_four_tailed_triangle = []
+        self.total_four_chordal_cycle = []
+        self.total_four_clique = []
+
+        # 5-nodes, totally 21 of them
+        self.total_five_graphlet = []
+        for _ in range(21):
+            self.total_five_graphlet.append({})
 
     def _add_2_dict(self, dictionary, index, content):
         if index not in dictionary:
@@ -413,6 +443,65 @@ class Graphlet:
 
 
 
+    # this function only generate global counting
+    def _count_4_nodes_global(self):
+        # derive  from close triangles dict
+        for node_pairs in self.total_close_triangle:
+            (node, node1, node2) = node_pairs
+            for i in self.G.neighbors(node1):
+                # 4 tailed triangle
+                if i != node2 and i != node and not self.G.has_edge(i, node2) and not self.G.has_edge(i, node):
+                    self.total_four_tailed_triangle.append((node, node2, node1, i))
+                # 4-chordal cycle
+                if i != node and self.G.has_edge(i, node2) and not self.G.has_edge(i, node):
+                    if node < i:
+                        self.total_four_chordal_cycle.append((node, node1, node2, i))
+            for i in self.G.neighbors(node2):
+                # 4 tailed triangle
+                if i != node1 and i != node and  not self.G.has_edge(i, node1) and not self.G.has_edge(i, node):
+                    self.total_four_tailed_triangle.append((node, node1, node2, i))
+                # 4 chordal cycle
+                if i != node and i != node1 and self.G.has_edge(i, node) and not self.G.has_edge(i, node1):
+                    if node1 < i:
+                        self.total_four_chordal_cycle.append((node1, node, node2, i))
+            for i in self.G.neighbors(node):
+                # 4 tailed triangle
+                if i != node1 and i != node2 and not self.G.has_edge(i, node1) and not self.G.has_edge(i, node2):
+                    self.total_four_tailed_triangle.append((node1, node2, node, i))
+                # 4 clique
+                if self.G.has_edge(i, node1) and self.G.has_edge(i, node2):
+                    if node < node1 < node2 < i:
+                        self.total_four_clique.append((node, node1, node2, i))
+                # 4 chordal cycle
+                if i != node1 and i != node2 and self.G.has_edge(i, node1) and not self.G.has_edge(i, node2):
+                    if node2 < i:
+                        self.total_four_chordal_cycle.append((node2, node, node1, i))
+
+        # derive from open triangles
+        for node_pairs in self.total_open_triangle:
+            (node, node1, node2) = node_pairs
+            for i in self.G.neighbors(node1):
+                # 4-path, small node first
+                if not self.G.has_edge(node2, i) and not self.G.has_edge(node, i):
+                    # eliminate duplication
+                    if node < node1:
+                        self.total_four_path.append((node, node2, node1, i))
+                # 4-cycle, small node first
+                if i != node and self.G.has_edge(node2, i) and not self.G.has_edge(node, i):
+                    if node < i and node < node1 and node < node2:
+                        self.total_four_cycle.append((node, node1, node2, i))
+
+            for i in self.G.neighbors(node2):
+                # 4-path, small node first
+                if not self.G.has_edge(node1, i) and not self.G.has_edge(node, i):
+                    # eliminate duplication
+                    if node < node2:
+                        self.total_four_path.append((node, node1, node2, i))
+            for i in self.G.neighbors(node):
+                # 3-star
+                if node1 < node2 < i and not self.G.has_edge(node1, i) and not self.G.has_edge(node2, i):
+                    # eliminate duplication: from small to big index
+                    self.total_three_star.append((node, node1, node2, i))
 
 
     # this function must be after _count_trianlges function
@@ -519,15 +608,29 @@ if __name__ == "__main__":
         (4, 7),(5, 6)])
     '''
     # G.add_edges_from([(0, 1), (0, 2), (0,3), (0,4), (3, 5), (5, 9), (5, 8), (5, 7), (5, 6)])
-    G = nx.fast_gnp_random_graph(10, 0.8, seed = 0)
+
+    size = 10
+    for i in range(7):
+        start = time.time()
+        G = nx.fast_gnp_random_graph(size, 0.5, seed=0)
+        graphlet = Graphlet(G)
+        end = time.time()
+        print("%d sized graph: %f" % (size, end - start))
+        size = size * 2
+    '''
+    G = nx.fast_gnp_random_graph(10, 0.5, seed=0)
     graphlet = Graphlet(G)
     graphlet.print_triangles()
     print("\n")
     graphlet.print_4_nodes()
     print("\n")
+    
     count = 1
     for d in graphlet.total_five_graphlet:
         print("%dth graphlet: %d" % (count, len(d)))
         print(d)
         count = count + 1
+
     graphlet.show_graph()
+    '''
+
