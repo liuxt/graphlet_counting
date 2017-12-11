@@ -33,9 +33,15 @@ class Graphlet:
     for _ in  range(21):
         total_five_graphlet.append({})
 
+    # 6-nodes, totally 112 of them
+    total_six_graphlet = []
+    for _ in range(112):
+        total_six_graphlet.append({})
 
-
-
+    # 7-nodes, totally 853 of them
+    total_seven_graphlet = []
+    for _ in range(853):
+        total_seven_graphlet.append({})
 
     # initializer
     def __init__(self, init_graph):
@@ -43,7 +49,7 @@ class Graphlet:
         self._init_all_data()
         self._count_triangles()
         self._count_4_nodes_global()
-        #self._count_total_5_nodes()
+        self._count_total_5_nodes()
 
     def show_graph(self):
         nx.draw(self.G, with_labels=True)
@@ -64,6 +70,7 @@ class Graphlet:
         print("number of totla open triangle: %d" % len(self.total_open_triangle))
 
     def print_4_nodes(self):
+        '''
         print("4 path dict:")
         print(self.four_path_dict)
         print("3 star dict:")
@@ -76,24 +83,29 @@ class Graphlet:
         print(self.four_chordal_cycle_dict)
         print("4 clique:")
         print(self.four_clique_dict)
+        '''
 
         print("total four path:")
-        print(self.total_four_path)
+        print(len(self.total_four_path))
         print("total three star: ")
-        print(self.total_three_star)
+        print(len(self.total_three_star))
         print("total four cycle: ")
-        print(self.total_four_cycle)
+        print(len(self.total_four_cycle))
         print("total four tailed triangle:")
-        print(self.total_four_tailed_triangle)
+        print(len(self.total_four_tailed_triangle))
         print("total four chordal cycle:")
-        print(self.total_four_chordal_cycle)
+        print(len(self.total_four_chordal_cycle))
         print("total four clique:")
-        print(self.total_four_clique)
-
+        print(len(self.total_four_clique))
 
     def print_5_nodes(self):
         print("total five node graphlets")
         print(self.total_five_graphlet)
+
+    def print_6_nodes(self):
+        print("total six node graphlets")
+        print(self.total_six_graphlet)
+
 
     # add one node and count 3-node graphlets
     def add_one_node(self, added_node, connected_nodes):
@@ -174,6 +186,16 @@ class Graphlet:
         for _ in range(21):
             self.total_five_graphlet.append({})
 
+        # 6-nodes, totally 112 of them
+        total_six_graphlet = []
+        for _ in range(112):
+            total_six_graphlet.append({})
+
+        # 7-nodes, totally 853 of them
+        total_seven_graphlet = []
+        for _ in range(853):
+            total_seven_graphlet.append({})
+
     def _add_2_dict(self, dictionary, index, content):
         if index not in dictionary:
             dictionary[index] = [content]
@@ -182,6 +204,7 @@ class Graphlet:
 
     # count five total nodes from four total node
     def _count_total_5_nodes(self):
+        '''
         # derive from 3-star
         for node_pair in self.total_three_star:
             node, node1, node2, node3 = node_pair
@@ -350,11 +373,12 @@ class Graphlet:
                 if (i != node1 and i != node2 and i < node and not self.G.has_edge(i, node1) and self.G.has_edge(i, node2) and
                         not self.G.has_edge(i, node)):
                     self.total_five_graphlet[15][(i, node3, node1, node2, node)] = None
-
+                '''
         # derive from 4 clique:
         for node_pair in self.total_four_clique:
             node, node1, node2, node3 = node_pair
             for i in self.G.neighbors(node):
+                '''
                 # No.15, almost same as No.7
                 if (i != node1 and i != node2 and i != node3 and not self.G.has_edge(i, node1) and not self.G.has_edge(i, node2) and
                         not self.G.has_edge(i, node3)):
@@ -366,13 +390,14 @@ class Graphlet:
                 if (i != node1 and i != node2 and i != node3 and not self.G.has_edge(i, node1) and self.G.has_edge(i, node2) and
                         not self.G.has_edge(i, node3)):
                     self.total_five_graphlet[18][(i, node, node1, node2, node3)] = None
+                    '''
                 # No.21
                 if (i != node1 and i != node2 and i != node3 and self.G.has_edge(i, node1) and self.G.has_edge(i, node2)
                     and self.G.has_edge(i, node3)):
                     if i == sorted((i, node, node1, node2, node3))[0]:
                         self.total_five_graphlet[20][(i, node, node1, node2, node3)] = None
 
-
+            '''
             for i in self.G.neighbors(node1):
                 # No.15, almost same as No.7
                 if (i != node and i != node3 and i != node2 and not self.G.has_edge(i, node) and not self.G.has_edge(i, node2) and
@@ -398,7 +423,7 @@ class Graphlet:
                 if (i != node1 and i != node2 and i != node and not self.G.has_edge(i, node1) and self.G.has_edge(i, node2) and
                         not self.G.has_edge(i, node)):
                     self.total_five_graphlet[18][(i, node3, node1, node2, node)] = None
-
+                '''
 
 
 
@@ -434,20 +459,12 @@ class Graphlet:
                     and not self.G.has_edge(node2, i)):
                     self.total_five_graphlet[4][(node, node1, node2, node3, i)] = None
 
-
-
-
-
-
-
-
-
-
     # this function only generate global counting
     def _count_4_nodes_global(self):
         # derive  from close triangles dict
         for node_pairs in self.total_close_triangle:
             (node, node1, node2) = node_pairs
+            '''
             for i in self.G.neighbors(node1):
                 # 4 tailed triangle
                 if i != node2 and i != node and not self.G.has_edge(i, node2) and not self.G.has_edge(i, node):
@@ -464,19 +481,25 @@ class Graphlet:
                 if i != node and i != node1 and self.G.has_edge(i, node) and not self.G.has_edge(i, node1):
                     if node1 < i:
                         self.total_four_chordal_cycle.append((node1, node, node2, i))
+                        '''
             for i in self.G.neighbors(node):
+                '''
                 # 4 tailed triangle
                 if i != node1 and i != node2 and not self.G.has_edge(i, node1) and not self.G.has_edge(i, node2):
                     self.total_four_tailed_triangle.append((node1, node2, node, i))
+                    '''
                 # 4 clique
                 if self.G.has_edge(i, node1) and self.G.has_edge(i, node2):
                     if node < node1 < node2 < i:
                         self.total_four_clique.append((node, node1, node2, i))
+                        '''
                 # 4 chordal cycle
                 if i != node1 and i != node2 and self.G.has_edge(i, node1) and not self.G.has_edge(i, node2):
                     if node2 < i:
                         self.total_four_chordal_cycle.append((node2, node, node1, i))
+                        '''
 
+        ''' 
         # derive from open triangles
         for node_pairs in self.total_open_triangle:
             (node, node1, node2) = node_pairs
@@ -502,8 +525,7 @@ class Graphlet:
                 if node1 < node2 < i and not self.G.has_edge(node1, i) and not self.G.has_edge(node2, i):
                     # eliminate duplication: from small to big index
                     self.total_three_star.append((node, node1, node2, i))
-
-
+        '''
     # this function must be after _count_trianlges function
     def _count_4_nodes(self):
         # derive  from close triangles dict
@@ -566,12 +588,6 @@ class Graphlet:
                         self._add_2_dict(self.three_star_dict, node, (node1, node2, i))
                         self.total_three_star.append((node, node1, node2, i))
 
-
-
-
-
-
-
     def _count_triangles(self):
         num_node = nx.number_of_nodes(self.G)
         for k in range(num_node):
@@ -608,7 +624,7 @@ if __name__ == "__main__":
         (4, 7),(5, 6)])
     '''
     # G.add_edges_from([(0, 1), (0, 2), (0,3), (0,4), (3, 5), (5, 9), (5, 8), (5, 7), (5, 6)])
-
+    '''
     size = 10
     for i in range(7):
         start = time.time()
@@ -618,19 +634,21 @@ if __name__ == "__main__":
         print("%d sized graph: %f" % (size, end - start))
         size = size * 2
     '''
-    G = nx.fast_gnp_random_graph(10, 0.5, seed=0)
+    G = nx.fast_gnp_random_graph(100, 0.4, seed=0)
+    #G = nx.barabasi_albert_graph(100,  3, seed=0)
     graphlet = Graphlet(G)
     graphlet.print_triangles()
     print("\n")
     graphlet.print_4_nodes()
     print("\n")
-    
+    print(len(graphlet.total_five_graphlet[20]))
+    ''' 
     count = 1
     for d in graphlet.total_five_graphlet:
         print("%dth graphlet: %d" % (count, len(d)))
         print(d)
         count = count + 1
-
     graphlet.show_graph()
     '''
+
 
