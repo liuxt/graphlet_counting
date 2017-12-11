@@ -106,6 +106,9 @@ class Graphlet:
         print("total six node graphlets")
         print(self.total_six_graphlet)
 
+    def print_7_nodes(self):
+        print("total seven node graphlets")
+        print(self.total_seven_graphlet)
 
     # add one node and count 3-node graphlets
     def add_one_node(self, added_node, connected_nodes):
@@ -202,7 +205,10 @@ class Graphlet:
         else:
             dictionary[index].append(content)
 
-    # count five total nodes from four total node
+    # count six total nodes from five total node graphlet
+    def _count_total_6_nodes(self):
+
+    # count five total nodes from four total node graphlet
     def _count_total_5_nodes(self):
         '''
         # derive from 3-star
