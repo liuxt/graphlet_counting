@@ -50,6 +50,8 @@ class Graphlet:
         self._count_triangles()
         self._count_4_nodes_global()
         self._count_total_5_nodes()
+        self._count_total_6_nodes()
+        self._count_total_7_nodes()
 
     def show_graph(self):
         nx.draw(self.G, with_labels=True)
@@ -207,6 +209,27 @@ class Graphlet:
 
     # count six total nodes from five total node graphlet
     def _count_total_6_nodes(self):
+        # derive from 5 clique:
+        for node_pair in self.total_five_graphlet[20]:
+            node, node1, node2, node3, node4 = node_pair
+            for i in self.G.neighbors(node):
+                # No.111
+                if (i == sorted((i, node, node1, node2, node3, node4))[0] and i != node1 and i != node2 and i != node3
+                    and i != node4 and self.G.has_edge(i, node1)
+                    and self.G.has_edge(i, node2) and self.G.has_edge(i, node3) and self.G.has_edge(i, node4)):
+                    self.total_six_graphlet[111][(i, node, node1, node2, node3, node4)] = None
+
+    def _count_total_7_nodes(self):
+        # derive from 6 clique:
+        for node_pair in self.total_six_graphlet[111]:
+            node, node1, node2, node3, node4, node5 = node_pair
+            for i in self.G.neighbors(node):
+                # No.832
+                if (i == sorted((i, node, node1, node2, node3, node4, node5))[0] and i != node1 and i != node2 and i != node3 and i != node4 and i != node5 and self.G.has_edge(i, node1)
+                    and self.G.has_edge(i, node2) and self.G.has_edge(i, node3) and self.G.has_edge(i, node4)
+                    and self.G.has_edge()):
+                    self.total_six_graphlet[831][(i, node, node1, node2, node3, node4, node5)] = None
+
 
     # count five total nodes from four total node graphlet
     def _count_total_5_nodes(self):
@@ -270,7 +293,7 @@ class Graphlet:
                 # No.8
                 if (i != node2 and self.G.has_edge(i, node1) and self.G.has_edge(i, node3)
                     and not self.G.has_edge(i, node) and not self.G.has_edge(i, node2)):
-                    if i == sorted((i, node1, node, node3, node2)):
+                    if i == sorted((i, node1, node, node3, node2))[0]:
                         self.total_five_graphlet[7][(i, node1, node, node3, node2)] = None
 
         # derive from 4-cycle
@@ -640,21 +663,24 @@ if __name__ == "__main__":
         print("%d sized graph: %f" % (size, end - start))
         size = size * 2
     '''
-    G = nx.fast_gnp_random_graph(100, 0.4, seed=0)
+    G = nx.fast_gnp_random_graph(15, 0.7, seed=0)
     #G = nx.barabasi_albert_graph(100,  3, seed=0)
     graphlet = Graphlet(G)
     graphlet.print_triangles()
     print("\n")
     graphlet.print_4_nodes()
     print("\n")
-    print(len(graphlet.total_five_graphlet[20]))
+    print((graphlet.total_five_graphlet[20]))
+    print((graphlet.total_six_graphlet[111]))
+    print((graphlet.total_seven_graphlet[831]))
     ''' 
     count = 1
     for d in graphlet.total_five_graphlet:
         print("%dth graphlet: %d" % (count, len(d)))
         print(d)
         count = count + 1
+        '''
     graphlet.show_graph()
-    '''
+
 
 
